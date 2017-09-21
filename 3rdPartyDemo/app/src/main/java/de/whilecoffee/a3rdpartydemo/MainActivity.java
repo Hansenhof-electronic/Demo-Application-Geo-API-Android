@@ -10,7 +10,9 @@ import android.widget.EditText;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import de.whilecoffee.geoapi.GeoEvent;
 import de.whilecoffee.geoapi.Odokus3rdPartyGeoAPI;
@@ -25,6 +27,7 @@ public class MainActivity extends AppCompatActivity implements OdokusGeoApiListe
     private EditText loginPassEditText;
     private EditText resultEditText;
     private Button startApiTestButton;
+    private Button insertDemoEntryButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +51,13 @@ public class MainActivity extends AppCompatActivity implements OdokusGeoApiListe
                 odokus_api_init();
             }
         });
+        insertDemoEntryButton = (Button) findViewById(R.id.main_insertEntryButton);
+        insertDemoEntryButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                odokus_api_demo_insert();
+            }
+        });
     }
 
     private void odokus_api_init()
@@ -61,8 +71,6 @@ public class MainActivity extends AppCompatActivity implements OdokusGeoApiListe
             geoAPI.setOdokusGeoApiListener(this);
         }
 
-
-
         // make api call to receive events for the last 3 days.
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.DATE, -3);
@@ -73,11 +81,25 @@ public class MainActivity extends AppCompatActivity implements OdokusGeoApiListe
         geoAPI.getGeoEvents(start, end);
     }
 
+    private void odokus_api_demo_insert()
+    {
+        // Create a custom event
+        Map<String, String> extensions = new HashMap<>();
+        extensions.put("note", "just some note");
+        GeoEvent evt = new GeoEvent(48.135125f,11.581980f, "Demo Event", "Generated Demo Data", new Date(), extensions);
+
+        // Send to odokus using api
+        geoAPI.setGeoEvent(evt, "geo-type-3");
+
+    }
+
     @Override
     public void receivedGeoEvents(List<GeoEvent> events) {
+        String resString = String.format("Received : %d\n",events.size());
         for (GeoEvent e : events){
-            resultEditText.setText(String.format("%s \n%s \n%s \n\n",
-                    e.getEventDate().toString(), e.getEventName(), e.getEventDescription()));
+            resString = resString + String.format("%s \n%s \n%s \n\n",
+                    e.getEventDate().toString(), e.getEventName(), e.getEventDescription());
         }
+        resultEditText.setText(resString);
     }
 }

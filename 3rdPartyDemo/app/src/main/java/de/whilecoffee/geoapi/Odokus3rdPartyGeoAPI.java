@@ -111,9 +111,7 @@ public class Odokus3rdPartyGeoAPI {
             connection.addRequestProperty("Authorization", "Basic " + authString);
             connection.setRequestProperty("Content-Type", "application/json;charset=utf-8");
             connection.setRequestProperty("Accept", "application/json");
-
             connection.setUseCaches(false);
-
         }
     }
 
@@ -132,7 +130,7 @@ public class Odokus3rdPartyGeoAPI {
 
     public String odokusDateStringFromDate(Date date)
     {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd'T'HHmmss'.000.0000'");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd'T'HHmmss'.000+0000'");
         String resultString = null;
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         resultString = sdf.format(date);
@@ -226,8 +224,8 @@ public class Odokus3rdPartyGeoAPI {
         String stString = odokusDateStringFromDate(startDate);
         String edString = odokusDateStringFromDate(endDate);
 
-        params.put("startDate", "20170906T060000.162+0200" );
-        params.put("endDate", "20170906T072000.162+0200");
+        params.put("startDate", stString );
+        params.put("endDate", edString);
         paramList.add(params);
 
         JSONRPC2Request request = new JSONRPC2Request(method, paramList, requestID);
@@ -260,7 +258,6 @@ public class Odokus3rdPartyGeoAPI {
                             Date date = dateFromOdokusDateString(sdate);
                             Map<String, String> extensions = (Map<String, String>) o.get("extensions");
 
-
                             GeoEvent e = new GeoEvent(lat, lon, "Coffee", "I grabbed some coffee here", date, extensions);
                             resultList.add(e);
                         }
@@ -281,9 +278,43 @@ public class Odokus3rdPartyGeoAPI {
         }
     }
 
-    public void setGeoEvent(GeoEvent evt)
+    public void setGeoEvent(GeoEvent evt, String api_type_string)
     {
+        String method = "saveGeoEvent";
+        int requestID = 33;
+        Map<String, Object> params = new HashMap<String, Object>();
+        List<Object> paramList = new ArrayList<>();
 
+        String dateString = odokusDateStringFromDate(evt.getEventDate());
+
+        params.put("type", api_type_string );
+        params.put("date", dateString);
+        params.put("longitude", evt.getLongitude());
+        params.put("latitude", evt.getLatitude());
+        params.put("extensions", evt.getExtensions());
+
+        paramList.add(params);
+
+        JSONRPC2Request request = new JSONRPC2Request(method, paramList, requestID);
+        try {
+            response = mySession.send(request);
+
+        } catch (JSONRPC2SessionException e) {
+
+            System.err.println(e.getMessage());
+            // handle exception...
+        }
+
+        // Print response result / error
+        if (response != null) {
+            if (response.indicatesSuccess()) {
+
+                System.out.println(response.getResult());
+                System.out.println("done");
+            } else {
+                System.out.println(response.getError().getMessage());
+            }
+        }
     }
 
     public interface OdokusGeoApiListener {

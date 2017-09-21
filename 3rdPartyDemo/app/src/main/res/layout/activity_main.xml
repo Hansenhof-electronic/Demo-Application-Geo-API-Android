@@ -18,28 +18,35 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:inputType="textPersonName"
-            android:text="odokus user" />
+            android:hint="odokus user"
+            android:inputType="textPersonName" />
 
         <EditText
             android:id="@+id/main_passwordEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:inputType="textPassword"
-            android:text="odokus password" />
+            android:hint="odokus password"
+            android:inputType="textPassword" />
 
         <Button
             android:id="@+id/main_StartTestButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Start API Test" />
+            android:text="INIT / Fetch from API" />
+
+        <Button
+            android:id="@+id/main_insertEntryButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Insert New Demo Entry" />
 
         <EditText
             android:id="@+id/main_resultEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
+            android:hint="Results"
             android:inputType="textMultiLine" />
 
     </LinearLayout>
